@@ -193,6 +193,8 @@ public static class KeyCodeGroups
 
     public static List<KeyCode> AdditionalMouse = new List<KeyCode>
     {
+        KeyCode.Mouse0,
+        KeyCode.Mouse1,
         KeyCode.Mouse2,
         KeyCode.Mouse3,
         KeyCode.Mouse4,

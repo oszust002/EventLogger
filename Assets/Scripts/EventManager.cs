@@ -8,14 +8,19 @@ using UnityEngine;
 //TODO: Add mouse recognition (up/down/drag)
 // example games
 // what other events? not much generic, because leaving this to user (other inputs!!)
-// Saving to file (mostly done)
 // joysticks/other mouse events (use KeyCodeGroups and Input.Get*)
-// axis (same as above, change when value significantly changes)
 public class EventManager : MonoBehaviour
 {
     public LoggerViewer LoggerViewer;
     public bool LogAllKeys = true;
+    public bool LogToFile = true;
+    public bool LogRawAxisValues;
     
+    [Range(0.15f, 0.8f)]
+    public float MinimumAxisValueDifference = 0.3f;
+
+    private float lastHorizontalAxis = 0;
+    private float lastVerticalAxis = 0;    
     
     private StreamWriter writer;
     private string logPath;
@@ -23,7 +28,8 @@ public class EventManager : MonoBehaviour
     private Dictionary<string, Action> _eventDictionary;
 
     private static EventManager _eventManager;
-    private KeyEventManager _keyEventManager = new KeyEventManager();
+    private readonly KeyEventManager _keyEventManager = new KeyEventManager();
+    private readonly MouseEventManager _mouseEventManager = new MouseEventManager();
     
     public static EventManager Instance
     {
@@ -58,7 +64,7 @@ public class EventManager : MonoBehaviour
         var myEvent = new Event();
         while (Event.PopEvent(myEvent))
         {
-//            Debug.Log(myEvent);
+            Debug.Log(myEvent);
             var time = Time.time;
             if (myEvent.isKey)
             {
@@ -75,24 +81,45 @@ public class EventManager : MonoBehaviour
             }
             else if (myEvent.isMouse)
             {
-                RecognizeMouseEvent(myEvent, time);
+                if (!LogAllKeys && !_mouseEventManager.HasKeyAlias(myEvent))
+                {
+                    continue;
+                }
+                _mouseEventManager.RecognizeMouseEvent(myEvent, time);
             }
         }
-//        Debug.Log(Input.GetKey(KeyCode.LeftControl));
-//        Debug.Log(Input.GetAxis("Horizontal"));
+
+        HandleAxis();
         foreach (var joystickKeyCode in KeyCodeGroups.SpecificJoystick)
         {
             
-            if (Input.GetKey(joystickKeyCode))
+            if (Input.GetKeyDown(joystickKeyCode))
             {
                 Debug.Log(joystickKeyCode);
+            } else if (Input.GetKeyUp(joystickKeyCode))
+            {
+                
             }
         }
     }
 
-    private void RecognizeMouseEvent(Event _event, float time)
+    private void HandleAxis()
     {
-        Debug.Log(_event.keyCode);
+        float time = Time.time;
+        var horizontal = LogRawAxisValues ? Input.GetAxisRaw("Horizontal") : Input.GetAxis("Horizontal");
+        var vertical = LogRawAxisValues ? Input.GetAxisRaw("Vertical") : Input.GetAxis("Vertical");
+
+        if (Math.Abs(horizontal - lastHorizontalAxis) > MinimumAxisValueDifference)
+        {
+            LogEvent(time, "Player", "AxisInput","Horizontal", "Value", horizontal);
+            lastHorizontalAxis = horizontal;
+        }
+        
+        if (Math.Abs(vertical - lastVerticalAxis) > MinimumAxisValueDifference)
+        {
+            LogEvent(time, "Player", "AxisInput","Vertical", "Value", horizontal);
+            lastVerticalAxis = vertical;
+        }
     }
 
     private void Init()
@@ -171,6 +198,11 @@ public class EventManager : MonoBehaviour
     
     private void WriteText(string line)
     {
+        if (!LogToFile)
+        {
+            return;
+        }
+        
         if (writer == null)
         {
             var fileExists = File.Exists(logPath);
