@@ -1,15 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using UnityEngine;
 
 
 //TODO: Add mouse recognition (up/down/drag)
-// modifiers (keyup/keydown works, when keyup modifier only then standard keydown runs, when another ctrl runs, both of them stop)
 // example games
 // what other events? not much generic, because leaving this to user (other inputs!!)
 // Saving to file (mostly done)
-// tag/type on invoke'ing ??
 // joysticks/other mouse events (use KeyCodeGroups and Input.Get*)
 // axis (same as above, change when value significantly changes)
 public class EventManager : MonoBehaviour
@@ -25,8 +24,8 @@ public class EventManager : MonoBehaviour
 
     private static EventManager _eventManager;
 
-    private Dictionary<KeyCode, float> _buttonsDown = new Dictionary<KeyCode, float>();
-    private Dictionary<KeyCode, Tuple<string, string>> _keyCodeAliases = new Dictionary<KeyCode, Tuple<string, string>>();
+    private Dictionary<KeyRepresentation, float> _buttonsDown = new Dictionary<KeyRepresentation, float>();
+    private Dictionary<KeyRepresentation, Tuple<string, string>> _keyCodeAliases = new Dictionary<KeyRepresentation, Tuple<string, string>>();
     
 
     public static EventManager Instance
@@ -53,7 +52,7 @@ public class EventManager : MonoBehaviour
     private void Start()
     {
         logPath = "./logs/eventlog_" + DateTime.Now.ToString("yyyyMMddTHHmmss") + ".log";
-        AddKeyAlias(KeyCode.K, "Playerlll", "KPRESS");
+        AddKeyAlias(KeyRepresentation.Create(KeyCode.K), "Playerlll", "KPRESS");
         InvokeRepeating(nameof(RecordKeys), 0, 0.001f);
     }
 
@@ -62,7 +61,7 @@ public class EventManager : MonoBehaviour
         var myEvent = new Event();
         while (Event.PopEvent(myEvent))
         {
-            Debug.Log(myEvent);
+//            Debug.Log(myEvent);
             var time = Time.time;
             if (myEvent.isKey)
             {
@@ -71,12 +70,12 @@ public class EventManager : MonoBehaviour
                     continue;
                 }
 
-                if (!LogAllKeys && !_keyCodeAliases.ContainsKey(myEvent.keyCode))
+                if (!LogAllKeys && !_keyCodeAliases.ContainsKey(KeyRepresentation.FromEvent(myEvent)))
                 {
                     continue;
                 }
 
-                Debug.Log(myEvent.rawType);
+//                Debug.Log(myEvent.rawType);
 
                 RecognizeKeyEvent(myEvent, time);
             }
@@ -85,7 +84,8 @@ public class EventManager : MonoBehaviour
                 RecognizeMouseEvent(myEvent, time);
             }
         }
-        Debug.Log(Input.GetAxis("Horizontal"));
+//        Debug.Log(Input.GetKey(KeyCode.LeftControl));
+//        Debug.Log(Input.GetAxis("Horizontal"));
         foreach (var joystickKeyCode in KeyCodeGroups.SpecificJoystick)
         {
             
@@ -98,35 +98,89 @@ public class EventManager : MonoBehaviour
 
     private void RecognizeMouseEvent(Event _event, float time)
     {
+        Debug.Log(_event.keyCode);
     }
 
     private void RecognizeKeyEvent(Event _event, float time)
     {
+        KeyRepresentation keyRepresentation = KeyRepresentation.FromEvent(_event);
         if (_event.rawType == EventType.KeyDown)
         {
-            if (_buttonsDown.ContainsKey(_event.keyCode)) return;
-            _buttonsDown.Add(_event.keyCode, time);
-            LogEvent(time, GetEventSettings(_event.keyCode, _event.rawType.ToString()));
+            if (_buttonsDown.ContainsKey(keyRepresentation)) return;
+            _buttonsDown.Add(keyRepresentation, time);
+            LogEvent(time, GetEventSettings(keyRepresentation, _event.rawType.ToString()));
         }
         else if (_event.rawType == EventType.KeyUp)
         {
-            if (_buttonsDown.ContainsKey(_event.keyCode))
+            if (IsSingleDownModifierKey(_event))
             {
-                var holdTime = time - _buttonsDown[_event.keyCode];
-                if (holdTime < 0.2f)
-                {
-                    LogEvent(time, GetEventSettings(_event.keyCode, _event.rawType.ToString()));
-                }
-                else
-                {
-                    LogEvent(time,
-                        GetEventSettings(_event.keyCode, _event.rawType.ToString())
-                            .Attribute("HoldTime", holdTime));
-                }
+                var representationKeys = GetModifiedRepresentationKeys(_event);
+                representationKeys.Add(keyRepresentation);
+                representationKeys.ForEach(representation => LogKeyDown(_event, time, representation));
             }
-
-            _buttonsDown.Remove(_event.keyCode);
+            else
+            {
+                LogKeyDown(_event, time, keyRepresentation);
+            }
         }
+    }
+
+    private List<KeyRepresentation> GetModifiedRepresentationKeys(Event _event)
+    {
+        return _buttonsDown.Keys
+            .Where(representation => representation.WasModifiedByKey(_event.keyCode)).ToList();
+    }
+
+    private bool IsSingleDownModifierKey(Event _event)
+    {
+        if (!(_event.keyCode == KeyCode.LeftAlt || _event.keyCode == KeyCode.RightAlt ||
+              _event.keyCode == KeyCode.LeftControl || _event.keyCode == KeyCode.RightControl ||
+              _event.keyCode == KeyCode.LeftShift || _event.keyCode == KeyCode.RightShift))
+        {
+            return false;
+        }
+        
+        return !_buttonsDown.Keys.Any(representation =>
+        {
+            switch (_event.keyCode)
+            {
+                case KeyCode.LeftAlt:
+                    return representation.KeyCode.Equals(KeyCode.RightAlt);
+                case KeyCode.RightAlt:
+                    return representation.KeyCode.Equals(KeyCode.LeftAlt);
+                case KeyCode.LeftControl:
+                    return representation.KeyCode.Equals(KeyCode.RightControl);
+                case KeyCode.RightControl:
+                    return representation.KeyCode.Equals(KeyCode.LeftControl);
+                case KeyCode.LeftShift:
+                    return representation.KeyCode.Equals(KeyCode.RightShift);
+                case KeyCode.RightShift:
+                    return representation.KeyCode.Equals(KeyCode.LeftShift);
+                default:
+                    return false;
+            }
+        });
+        
+    }
+
+    private void LogKeyDown(Event _event, float time, KeyRepresentation keyRepresentation)
+    {
+        if (_buttonsDown.ContainsKey(keyRepresentation))
+        {
+            var holdTime = time - _buttonsDown[keyRepresentation];
+            if (holdTime < 0.2f)
+            {
+                LogEvent(time, GetEventSettings(keyRepresentation, _event.rawType.ToString()));
+            }
+            else
+            {
+                LogEvent(time,
+                    GetEventSettings(keyRepresentation, _event.rawType.ToString())
+                        .Attribute("HoldTime", holdTime));
+            }
+        }
+
+        _buttonsDown.Remove(keyRepresentation);
     }
 
     private void Init()
@@ -137,16 +191,16 @@ public class EventManager : MonoBehaviour
         }
     }
 
-    public static void AddKeyAlias(KeyCode keyCode, string tag, string aliasName)
+    public static void AddKeyAlias(KeyRepresentation key, string tag, string aliasName)
     {
-        Instance._keyCodeAliases.Add(keyCode, Tuple.Create(tag, aliasName));
+        Instance._keyCodeAliases.Add(key, Tuple.Create(tag, aliasName));
     }
 
-    private EventSettings.EventSettingsBuilder GetEventSettings(KeyCode keyCode, string type)
+    private EventSettings.EventSettingsBuilder GetEventSettings(KeyRepresentation key, string type)
     {
-        var tuple = _keyCodeAliases.ContainsKey(keyCode)
-            ? _keyCodeAliases[keyCode]
-            : Tuple.Create("Player", keyCode.ToString());
+        var tuple = _keyCodeAliases.ContainsKey(key)
+            ? _keyCodeAliases[key]
+            : Tuple.Create("Player", key.ToString());
         
         return EventSettings.Builder(tuple.Item1, type, tuple.Item2);
     }
@@ -201,11 +255,13 @@ public class EventManager : MonoBehaviour
         }
     }
 
-    public static void TriggerEvent(string eventName)
+    public static void TriggerEvent(string tag, string eventName)
     {
+        float time = Time.time;
         Action thisEvent;
         if (Instance._eventDictionary.TryGetValue(eventName, out thisEvent))
         {
+            Instance.Log(time, EventSettings.Builder(tag, "Invoke", eventName));
             thisEvent.Invoke();
         }
     }

@@ -319,6 +319,10 @@ PrefabInstance:
       propertyPath: LoggerViewer
       value: 
       objectReference: {fileID: 1519736662}
+    - target: {fileID: 1542957928, guid: 4b43f2d077ebc3b4ba2b12659592eecf, type: 3}
+      propertyPath: LogAllKeys
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4b43f2d077ebc3b4ba2b12659592eecf, type: 3}
 --- !u!1 &876085019
@@ -517,7 +521,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1022306504, guid: 75023b64647c401488e870b9d292397d, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 89.40001
+      value: 89.400055
       objectReference: {fileID: 0}
     - target: {fileID: 970732199, guid: 75023b64647c401488e870b9d292397d, type: 3}
       propertyPath: m_AnchorMax.x
