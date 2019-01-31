@@ -13,13 +13,11 @@ public class KeyEventManager
     public void RecognizeKeyEvent(Event _event, float time)
     {
         KeyRepresentation keyRepresentation = KeyRepresentation.FromEvent(_event);
-        if (_event.rawType == EventType.KeyDown)
+        if (_event.type == EventType.KeyDown)
         {
-            if (_buttonsDown.ContainsKey(keyRepresentation)) return;
-            _buttonsDown.Add(keyRepresentation, time);
-            EventManager.LogEvent(time, GetEventSettings(keyRepresentation, _event.rawType.ToString()));
+            RegisterKeyDown(_event, time, keyRepresentation);
         }
-        else if (_event.rawType == EventType.KeyUp)
+        else if (_event.type == EventType.KeyUp)
         {
             if (IsSingleDownModifierKey(_event))
             {
@@ -32,6 +30,13 @@ public class KeyEventManager
                 LogKeyDown(_event, time, keyRepresentation);
             }
         }
+    }
+
+    private void RegisterKeyDown(Event _event, float time, KeyRepresentation keyRepresentation)
+    {
+        if (_buttonsDown.ContainsKey(keyRepresentation)) return;
+        _buttonsDown.Add(keyRepresentation, time);
+        EventManager.LogEvent(time, GetEventSettings(keyRepresentation, _event.type.ToString()));
     }
 
     public bool HasKeyAlias(Event myEvent)
@@ -84,12 +89,12 @@ public class KeyEventManager
             var holdTime = time - _buttonsDown[keyRepresentation];
             if (holdTime < 0.2f)
             {
-                EventManager.LogEvent(time, GetEventSettings(keyRepresentation, _event.rawType.ToString()));
+                EventManager.LogEvent(time, GetEventSettings(keyRepresentation, _event.type.ToString()));
             }
             else
             {
                 EventManager.LogEvent(time,
-                    GetEventSettings(keyRepresentation, _event.rawType.ToString())
+                    GetEventSettings(keyRepresentation, _event.type.ToString())
                         .Attribute("HoldTime", holdTime));
             }
         }

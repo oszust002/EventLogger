@@ -6,40 +6,27 @@ using UnityEngine.UI;
 
 public class LoggerViewer : MonoBehaviour
 {
-    public Text LoggerText;
-    
-    public int MaxLines = 10;
-    
-    private List<string> _loggerLogList = new List<string>();
-
+    public Text LoggerText;    
 
     private void Start()
     {
-        LoggerText.text = "";
+        if (LoggerViewManager._loggerViewManager != null)
+        {
+            LoggerViewManager._loggerViewManager.RefreshView();
+        }
     }
 
-    public void AddEvent(string eventString)
+    public void SetLogs(List<string> logs)
     {
-        _loggerLogList.Add(eventString);
-
-        if (_loggerLogList.Count > MaxLines)
-        {
-            _loggerLogList.RemoveAt(0);
-        }
-
         var logText = "";
 
-        foreach (var logEvent in _loggerLogList)
+        foreach (var logEvent in logs)
         {
             logText += logEvent;
             logText += "\n";
         }
 
-        if (LoggerText != null)
-        {
-            LoggerText.text = logText;
-        }
-
+        LoggerText.text = logText;
     }
     
     

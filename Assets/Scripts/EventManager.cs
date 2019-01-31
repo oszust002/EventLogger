@@ -9,12 +9,15 @@ using UnityEngine;
 // example games
 // what other events? not much generic, because leaving this to user (other inputs!!)
 // joysticks/other mouse events (use KeyCodeGroups and Input.Get*)
+// LoggerViewer - keep list in EventManager, DontDestroyOnLoad not working
+//
 public class EventManager : MonoBehaviour
 {
-    public LoggerViewer LoggerViewer;
+    public LoggerViewManager LoggerViewManager;
     public bool LogAllKeys = true;
     public bool LogToFile = true;
     public bool LogRawAxisValues;
+    public bool Enabled = true;
     
     [Range(0.15f, 0.8f)]
     public float MinimumAxisValueDifference = 0.3f;
@@ -54,18 +57,38 @@ public class EventManager : MonoBehaviour
 
     private void Start()
     {
-        logPath = "./logs/eventlog_" + DateTime.Now.ToString("yyyyMMddTHHmmss") + ".log";
-        AddKeyAlias(KeyRepresentation.Create(KeyCode.K), "Playerlll", "KPRESS");
+        if(_eventManager == null)
+        {
+            DontDestroyOnLoad(gameObject);
+            _eventManager = this;
+            _eventManager.Init();
+        }
+        else
+        {
+            if(_eventManager != this)
+            {
+                Destroy (gameObject);
+            }
+            else
+            {
+                DontDestroyOnLoad(gameObject);
+                return;
+            }
+        }
         InvokeRepeating(nameof(RecordKeys), 0, 0.001f);
     }
 
     private void RecordKeys()
     {
+        if (!Enabled)
+        {
+            return;
+        }
+        var time = Time.time;
         var myEvent = new Event();
         while (Event.PopEvent(myEvent))
         {
-            Debug.Log(myEvent);
-            var time = Time.time;
+            Debug.Log(myEvent.type);
             if (myEvent.isKey)
             {
                 if (myEvent.keyCode == KeyCode.None)
@@ -88,19 +111,73 @@ public class EventManager : MonoBehaviour
                 _mouseEventManager.RecognizeMouseEvent(myEvent, time);
             }
         }
-
+        //Remove when events will start sending shift
+        CheckKeyCode(KeyCode.LeftShift, time);
+        CheckKeyCode(KeyCode.RightShift, time);
+        
         HandleAxis();
         foreach (var joystickKeyCode in KeyCodeGroups.SpecificJoystick)
         {
-            
-            if (Input.GetKeyDown(joystickKeyCode))
-            {
-                Debug.Log(joystickKeyCode);
-            } else if (Input.GetKeyUp(joystickKeyCode))
-            {
-                
-            }
+            CheckKeyCode(joystickKeyCode, time);
         }
+    }
+
+    private void CheckKeyCode(KeyCode keyCode, float time)
+    {
+        if (Input.GetKeyDown(keyCode))
+        {
+            _keyEventManager.RecognizeKeyEvent(BuildEvent(keyCode, EventType.KeyDown), time);
+        }
+        else if (Input.GetKeyUp(keyCode))
+        {
+            _keyEventManager.RecognizeKeyEvent(BuildEvent(keyCode, EventType.KeyUp), time);
+        }
+    }
+
+    private Event BuildEvent(KeyCode joystickKeyCode, EventType keyDown)
+    {
+        var eventModifiers = GetCurrentModifiers();
+        var _event = new Event();
+        _event.keyCode = joystickKeyCode;
+        _event.type = keyDown;
+        _event.modifiers = eventModifiers;
+        return _event;
+
+    }
+
+    private EventModifiers GetCurrentModifiers()
+    {
+        EventModifiers eventModifiers = EventModifiers.None;
+        if (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl) || Input.GetKey(KeyCode.RightAlt))
+        {
+            eventModifiers |= EventModifiers.Control;
+        }
+        if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
+        {
+            eventModifiers |= EventModifiers.Shift;
+        } 
+        if (Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt))
+        {
+            eventModifiers |= EventModifiers.Control;
+        }
+
+        return eventModifiers;
+    }
+
+    private void Init()
+    {
+        if (_eventDictionary == null)
+        {
+            _eventDictionary = new Dictionary<string, Action>();
+        }
+        
+        logPath = "./logs/eventlog_" + DateTime.Now.ToString("yyyyMMddTHHmmss") + ".log";
+        
+        if (LoggerViewManager == null)
+        {
+            LoggerViewManager = FindObjectOfType(typeof(LoggerViewManager)) as LoggerViewManager;
+        }
+        AddKeyAlias(KeyRepresentation.Create(KeyCode.K), "Playerlll", "KPRESS");
     }
 
     private void HandleAxis()
@@ -122,12 +199,19 @@ public class EventManager : MonoBehaviour
         }
     }
 
-    private void Init()
+    public static void Enable()
     {
-        if (_eventDictionary == null)
-        {
-            _eventDictionary = new Dictionary<string, Action>();
-        }
+        Instance.Enabled = true;
+    }
+
+    public static void Disable()
+    {
+        Instance.Enabled = false;
+    }
+
+    public static bool IsEnabled()
+    {
+        return Instance.Enabled;
     }
 
     public static void AddKeyAlias(KeyRepresentation key, string tag, string aliasName)
@@ -156,7 +240,7 @@ public class EventManager : MonoBehaviour
     {
         var eventString = eventSettings.ToLogString(time);
         WriteText(eventString);
-        LoggerViewer.AddEvent(eventString);
+        LoggerViewManager.AddEvent(eventString);
     }
 
     public static void StartListening(string eventName, Action listener)

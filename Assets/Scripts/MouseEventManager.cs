@@ -18,21 +18,21 @@ public class MouseEventManager
             return;
         }
 
-        if (_event.rawType == EventType.MouseDown)
+        if (_event.type == EventType.MouseDown)
         {
             if (_buttonsDown.ContainsKey(keyRepresentation)) return;
             _buttonsDown.Add(keyRepresentation, time);
-            var eventSettingsBuilder = GetEventSettings(keyRepresentation, _event.rawType.ToString());
+            var eventSettingsBuilder = GetEventSettings(keyRepresentation, _event.type.ToString());
             
             EventManager.LogEvent(time, eventSettingsBuilder.Attribute("PositionX", _event.mousePosition.x));
             EventManager.LogEvent(time, eventSettingsBuilder.Attribute("PositionY", _event.mousePosition.y));
         }
-        else if (_event.rawType == EventType.MouseUp)
+        else if (_event.type == EventType.MouseUp)
         {
             var firstOrDefault = _buttonsDown.Keys.FirstOrDefault(representation => representation.KeyCode == mouseKeyCode);
             if (firstOrDefault != null)
             {
-                var eventSettingsBuilder = GetEventSettings(firstOrDefault, _event.rawType.ToString());
+                var eventSettingsBuilder = GetEventSettings(firstOrDefault, _event.type.ToString());
             
                 EventManager.LogEvent(time, eventSettingsBuilder.Attribute("PositionX", _event.mousePosition.x));
                 EventManager.LogEvent(time, eventSettingsBuilder.Attribute("PositionY", _event.mousePosition.y));
