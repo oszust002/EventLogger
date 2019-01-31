@@ -45,7 +45,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   LoggerViewManager: {fileID: 0}
   LogAllKeys: 1
-  LogToFile: 0
+  LogToFile: 1
   LogRawAxisValues: 0
   Enabled: 1
-  MinimumAxisValueDifference: 0.301
+  MinimumAxisValueDifference: 0.496

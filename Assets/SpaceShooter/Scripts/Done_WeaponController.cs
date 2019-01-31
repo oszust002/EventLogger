@@ -15,8 +15,8 @@ public class Done_WeaponController : MonoBehaviour
 
 	void Fire ()
 	{
-		EventManager.LogEvent(Time.time, tag, "PlayerControl", "Shoot", "PositionX", shotSpawn.position.x);
-		EventManager.LogEvent(Time.time, tag, "PlayerControl", "Shoot", "PositionY", shotSpawn.position.y);
+		EventManager.LogEvent(Time.time, tag, "EnemyAction", "Shoot", "PositionX", shotSpawn.position.x);
+		EventManager.LogEvent(Time.time, tag, "EnemyAction", "Shoot", "PositionY", shotSpawn.position.z);
 		Instantiate(shot, shotSpawn.position, shotSpawn.rotation);
 		GetComponent<AudioSource>().Play();
 	}
