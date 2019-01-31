@@ -201,12 +201,17 @@ public class EventManager : MonoBehaviour
 
     public static void Enable()
     {
+        if (!Instance.Enabled) 
+        {
+            Instance.Init();
+        }
         Instance.Enabled = true;
     }
 
     public static void Disable()
     {
         Instance.Enabled = false;
+        Instance.writer?.Close();
     }
 
     public static bool IsEnabled()
