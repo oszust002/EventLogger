@@ -23,8 +23,9 @@ public class EventManager : MonoBehaviour
     public float MinimumAxisValueDifference = 0.3f;
 
     private float lastHorizontalAxis = 0;
-    private float lastVerticalAxis = 0;    
-    
+    private float lastVerticalAxis = 0;
+
+    private const string LogsFolder = "./logs";
     private StreamWriter writer;
     private string logPath;
 
@@ -171,7 +172,7 @@ public class EventManager : MonoBehaviour
             _eventDictionary = new Dictionary<string, Action>();
         }
         
-        logPath = "./logs/eventlog_" + DateTime.Now.ToString("yyyyMMddTHHmmss") + ".log";
+        logPath = LogsFolder + "/eventlog_" + DateTime.Now.ToString("yyyyMMddTHHmmss") + ".log";
         
         if (LoggerViewManager == null)
         {
@@ -294,6 +295,7 @@ public class EventManager : MonoBehaviour
         
         if (writer == null)
         {
+            Directory.CreateDirectory(LogsFolder);
             var fileExists = File.Exists(logPath);
             writer = File.AppendText(logPath);
             if (!fileExists)
