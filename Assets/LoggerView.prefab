@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 6229545530573558918}
   - component: {fileID: 1746543233}
   m_Layer: 5
-  m_Name: LoggerView 1
+  m_Name: LoggerView
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -239,8 +239,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 8325080430463677970}
   m_HandleRect: {fileID: 3349049636216167572}
   m_Direction: 0
-  m_Value: 1
-  m_Size: 0.9999998
+  m_Value: 0
+  m_Size: 0.9999999
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -280,7 +280,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0.00006784992, y: 0}
+  m_AnchoredPosition: {x: 0.0000068173576, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!1 &5270163273523850162
@@ -475,7 +475,7 @@ MonoBehaviour:
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_FontData:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
-    m_FontSize: 16
+    m_FontSize: 15
     m_FontStyle: 1
     m_BestFit: 0
     m_MinSize: 0
