@@ -183,7 +183,6 @@ public class EventManager : MonoBehaviour
         {
             LoggerViewManager = FindObjectOfType(typeof(LoggerViewManager)) as LoggerViewManager;
         }
-        AddKeyAlias(KeyRepresentation.Create(KeyCode.K), "Playerlll", "KPRESS");
         _configured = true;
         
         InvokeRepeating(nameof(RecordKeys), 0, 0.001f);
