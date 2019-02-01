@@ -8,9 +8,6 @@ using UnityEngine;
 //TODO: Add mouse recognition (up/down/drag)
 // example games
 // what other events? not much generic, because leaving this to user (other inputs!!)
-// joysticks/other mouse events (use KeyCodeGroups and Input.Get*)
-// LoggerViewer - keep list in EventManager, DontDestroyOnLoad not working
-//
 public class EventManager : MonoBehaviour
 {
     public LoggerViewManager LoggerViewManager;
@@ -34,6 +31,8 @@ public class EventManager : MonoBehaviour
     private static EventManager _eventManager;
     private readonly KeyEventManager _keyEventManager = new KeyEventManager();
     private readonly MouseEventManager _mouseEventManager = new MouseEventManager();
+    //Workaround, because build initializes _eventManager somehow
+    private bool _configured;
     
     public static EventManager Instance
     {
@@ -73,10 +72,10 @@ public class EventManager : MonoBehaviour
             else
             {
                 DontDestroyOnLoad(gameObject);
-                return;
+                _eventManager.Init();
             }
         }
-        InvokeRepeating(nameof(RecordKeys), 0, 0.001f);
+        
     }
 
     private void RecordKeys()
@@ -85,6 +84,7 @@ public class EventManager : MonoBehaviour
         {
             return;
         }
+        
         var time = Time.time;
         var myEvent = new Event();
         while (Event.PopEvent(myEvent))
@@ -167,6 +167,11 @@ public class EventManager : MonoBehaviour
 
     private void Init()
     {
+        if (_configured)
+        {
+            return;
+        }
+        
         if (_eventDictionary == null)
         {
             _eventDictionary = new Dictionary<string, Action>();
@@ -179,6 +184,9 @@ public class EventManager : MonoBehaviour
             LoggerViewManager = FindObjectOfType(typeof(LoggerViewManager)) as LoggerViewManager;
         }
         AddKeyAlias(KeyRepresentation.Create(KeyCode.K), "Playerlll", "KPRESS");
+        _configured = true;
+        
+        InvokeRepeating(nameof(RecordKeys), 0, 0.001f);
     }
 
     private void HandleAxis()
@@ -244,6 +252,10 @@ public class EventManager : MonoBehaviour
 
     private void Log(float time, EventSettings eventSettings)
     {
+        if (!Enabled)
+        {
+            return;
+        }
         var eventString = eventSettings.ToLogString(time);
         WriteText(eventString);
         LoggerViewManager.AddEvent(eventString);
