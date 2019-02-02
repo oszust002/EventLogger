@@ -89,7 +89,7 @@ public class EventManager : MonoBehaviour
         var myEvent = new Event();
         while (Event.PopEvent(myEvent))
         {
-            Debug.Log(myEvent.type);
+            Debug.Log(myEvent.modifiers);
             if (myEvent.isKey)
             {
                 if (myEvent.keyCode == KeyCode.None)
@@ -248,7 +248,10 @@ public class EventManager : MonoBehaviour
         {
             Instance._mouseEventManager.AddKeyAlias(key, tag, aliasName);
         }
-        Instance._keyEventManager.AddKeyAlias(key, tag, aliasName);
+        else
+        {
+            Instance._keyEventManager.AddKeyAlias(key, tag, aliasName);
+        }
     }
 
     public static void LogEvent(float time, string tag, string type, string eventName, string attributeName = null,

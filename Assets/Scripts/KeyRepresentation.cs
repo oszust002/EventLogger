@@ -32,7 +32,14 @@ public class KeyRepresentation
         {
             Modifiers &= ~EventModifiers.Control;
         }
-        Debug.Log(Modifiers + " " + KeyCode);
+
+        //Unity thinks that arrow keys are function keys
+        if (KeyCode == KeyCode.LeftArrow || KeyCode == KeyCode.RightArrow || KeyCode == KeyCode.UpArrow ||
+            KeyCode == KeyCode.DownArrow)
+        {
+            Modifiers &= ~EventModifiers.FunctionKey; 
+        }
+//        Debug.Log(Modifiers + " " + KeyCode);
         return this;
     }
 
