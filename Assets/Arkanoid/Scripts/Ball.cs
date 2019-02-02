@@ -45,7 +45,7 @@ public class Ball : MonoBehaviour {
 			EventManager.LogEvent(Time.time, "Ball", "Movement", "BallBounce", "PositionY", transform.position.y);
 			GetComponent<Rigidbody2D>().velocity += tweak;
 			EventManager.LogEvent(Time.time, "Ball", "Movement", "BallBounce", "VelocityX", GetComponent<Rigidbody2D>().velocity.x);
-			EventManager.LogEvent(Time.time, "Ball", "Movement", "BallBounce", "PositionY", GetComponent<Rigidbody2D>().velocity.y);
+			EventManager.LogEvent(Time.time, "Ball", "Movement", "BallBounce", "VelocityY", GetComponent<Rigidbody2D>().velocity.y);
 		}
 	}
 }
