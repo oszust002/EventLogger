@@ -46,7 +46,7 @@ public class Brick : MonoBehaviour {
 			PuffSmoke();
 			Destroy(gameObject);
 		} else {
-			EventManager.LogEvent(Time.time, "Brick_" + name, "Life", "Hit", "LifeDecreaseTo", 0);
+			EventManager.LogEvent(Time.time, "Brick_" + name, "Life", "Hit", "LifeDecreaseTo", maxHits - timesHit);
 			LoadSprites();
 		}
 	}
