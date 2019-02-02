@@ -89,7 +89,7 @@ public class EventManager : MonoBehaviour
         var myEvent = new Event();
         while (Event.PopEvent(myEvent))
         {
-            Debug.Log(myEvent.modifiers);
+//            Debug.Log(myEvent.modifiers);
             if (myEvent.isKey)
             {
                 if (myEvent.keyCode == KeyCode.None)
@@ -115,7 +115,6 @@ public class EventManager : MonoBehaviour
         //Remove when events will start sending shift
         CheckKeyCode(KeyCode.LeftShift, time);
         CheckKeyCode(KeyCode.RightShift, time);
-        
         HandleAxis();
         foreach (var joystickKeyCode in KeyCodeGroups.SpecificJoystick)
         {
@@ -266,7 +265,7 @@ public class EventManager : MonoBehaviour
         LogEvent(time, eventSettingsBuilder);
     }
 
-    public static void LogEvent(float time, EventSettings eventSettings)
+    internal static void LogEvent(float time, EventSettings eventSettings)
     {
         Instance.Log(time, eventSettings);
     }
