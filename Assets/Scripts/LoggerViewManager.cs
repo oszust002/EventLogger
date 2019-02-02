@@ -58,4 +58,10 @@ public class LoggerViewManager : MonoBehaviour
             LoggerViewer.SetLogs(_loggerLogList);
         }
     }
+
+    public void ResetView()
+    {
+        _loggerLogList.Clear();
+        RefreshView();
+    }
 }

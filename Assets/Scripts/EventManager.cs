@@ -216,10 +216,25 @@ public class EventManager : MonoBehaviour
         Instance.Enabled = true;
     }
 
-    public static void Disable()
+    public static void Disable(bool resetConfig = false)
     {
-        Instance.Enabled = false;
-        Instance.writer?.Close();
+        Instance.DisableManager(resetConfig);
+    }
+
+    private void DisableManager(bool resetConfig = false)
+    {
+        Enabled = false;
+        if (resetConfig)
+        {
+            writer?.Close();
+            writer = null;
+            _configured = false;
+            LoggerViewManager?.ResetView();
+        }
+        else
+        {
+            writer?.Flush();
+        }
     }
 
     public static bool IsEnabled()
@@ -229,6 +244,10 @@ public class EventManager : MonoBehaviour
 
     public static void AddKeyAlias(KeyRepresentation key, string tag, string aliasName)
     {
+        if (KeyCodeGroups.Mouse.Contains(key.KeyCode))
+        {
+            Instance._mouseEventManager.AddKeyAlias(key, tag, aliasName);
+        }
         Instance._keyEventManager.AddKeyAlias(key, tag, aliasName);
     }
 

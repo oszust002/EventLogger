@@ -113,6 +113,6 @@ public class KeyEventManager
 
     public void AddKeyAlias(KeyRepresentation key, string tag, string aliasName)
     {
-        _keyCodeAliases.Add(key, Tuple.Create(tag, aliasName));
+        _keyCodeAliases[key] = Tuple.Create(tag, aliasName);
     }
 }

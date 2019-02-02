@@ -412,12 +412,12 @@ PrefabInstance:
     - target: {fileID: 3833802228148709234, guid: e4de336035c80534f94101395b3f1fbc,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -0.000017743574
+      value: 0.00003583294
       objectReference: {fileID: 0}
     - target: {fileID: 3833802228148709234, guid: e4de336035c80534f94101395b3f1fbc,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -0.000061035156
       objectReference: {fileID: 0}
     - target: {fileID: 4985521272495523362, guid: e4de336035c80534f94101395b3f1fbc,
         type: 3}
@@ -464,6 +464,11 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3356665545631538290, guid: e4de336035c80534f94101395b3f1fbc,
+        type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e4de336035c80534f94101395b3f1fbc, type: 3}
 --- !u!114 &1843032596 stripped
@@ -490,6 +495,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: LoggerViewManager
       objectReference: {fileID: 0}
+    - target: {fileID: 3801096830008306421, guid: 518dfc7c62465b444bb9a99f9de56cac,
+        type: 3}
+      propertyPath: LoggerViewer
+      value: 
+      objectReference: {fileID: 1843032596}
     - target: {fileID: 3801096830008306420, guid: 518dfc7c62465b444bb9a99f9de56cac,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -545,11 +555,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 3801096830008306421, guid: 518dfc7c62465b444bb9a99f9de56cac,
-        type: 3}
-      propertyPath: LoggerViewer
-      value: 
-      objectReference: {fileID: 1843032596}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 518dfc7c62465b444bb9a99f9de56cac, type: 3}
 --- !u!1001 &6499320744510389275

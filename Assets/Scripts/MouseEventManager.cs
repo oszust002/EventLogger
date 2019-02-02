@@ -78,5 +78,10 @@ public class MouseEventManager
         return _keyCodeAliases.ContainsKey(KeyRepresentation.FromEvent(myEvent));
     }
     
+    public void AddKeyAlias(KeyRepresentation key, string tag, string aliasName)
+    {
+        _keyCodeAliases[key] = Tuple.Create(tag, aliasName);
+    }
+    
     
 }

@@ -324,6 +324,16 @@ PrefabInstance:
       propertyPath: m_Name
       value: LoggerViewManager
       objectReference: {fileID: 0}
+    - target: {fileID: 3801096830008306421, guid: 518dfc7c62465b444bb9a99f9de56cac,
+        type: 3}
+      propertyPath: LoggerViewer
+      value: 
+      objectReference: {fileID: 1235324624}
+    - target: {fileID: 3801096830008306421, guid: 518dfc7c62465b444bb9a99f9de56cac,
+        type: 3}
+      propertyPath: MaxLines
+      value: 30
+      objectReference: {fileID: 0}
     - target: {fileID: 3801096830008306420, guid: 518dfc7c62465b444bb9a99f9de56cac,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -378,16 +388,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3801096830008306421, guid: 518dfc7c62465b444bb9a99f9de56cac,
-        type: 3}
-      propertyPath: LoggerViewer
-      value: 
-      objectReference: {fileID: 1235324624}
-    - target: {fileID: 3801096830008306421, guid: 518dfc7c62465b444bb9a99f9de56cac,
-        type: 3}
-      propertyPath: MaxLines
-      value: 30
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 518dfc7c62465b444bb9a99f9de56cac, type: 3}
@@ -949,7 +949,7 @@ PrefabInstance:
     - target: {fileID: 3833802228148709234, guid: e4de336035c80534f94101395b3f1fbc,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0.000020058005
+      value: -0.000007221563
       objectReference: {fileID: 0}
     - target: {fileID: 3833802228148709234, guid: e4de336035c80534f94101395b3f1fbc,
         type: 3}
@@ -1731,6 +1731,11 @@ PrefabInstance:
       propertyPath: LoggerViewManager
       value: 
       objectReference: {fileID: 1537042618}
+    - target: {fileID: 6639742437167423795, guid: 6e946a2532f27cd4292a918b7088a820,
+        type: 3}
+      propertyPath: LogAllKeys
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6e946a2532f27cd4292a918b7088a820, type: 3}
 --- !u!1001 &2123367941

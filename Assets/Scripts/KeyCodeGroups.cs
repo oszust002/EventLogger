@@ -191,7 +191,7 @@ public static class KeyCodeGroups
         KeyCode.Joystick8Button19
     };
 
-    public static List<KeyCode> AdditionalMouse = new List<KeyCode>
+    public static List<KeyCode> Mouse = new List<KeyCode>
     {
         KeyCode.Mouse0,
         KeyCode.Mouse1,

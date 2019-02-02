@@ -44,4 +44,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   LoggerViewer: {fileID: 0}
-  MaxLines: 10
+  MaxLines: 30
